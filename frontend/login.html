@@ -1,0 +1,32 @@
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
+  email TEXT,
+  senha TEXT
+)
+app.post("/login", (req, res) => {
+  if(req.body.email === "admin@techcare.com") {
+    res.json({ token: "123456" });
+  } else {
+    res.status(401).json({ erro: "Login inválido" });
+  }
+});
+function login() {
+  fetch("/login", { method: "POST" })
+  .then(res => res.json())
+  .then(() => window.location = "index.html");
+}
+<h2>Dashboard</h2>
+<p>Total de clientes: 12</p>
+<p>Chamados abertos: 5</p>
+<p>Chamados finalizados: 7</p>
+<button onclick="logout()">Logout</button>
+function logout() {
+  window.location = "login.html";
+}
+}   
+fetch("/dashboard").then(...)
+.then(data => {
+  document.getElementById("total-clientes").innerText = data.totalClientes;
+  document.getElementById("chamados-abertos").innerText = data.chamadosAbertos;
+  document.getElementById("chamados-finalizados").innerText = data.chamadosFinalizados;
+}); 

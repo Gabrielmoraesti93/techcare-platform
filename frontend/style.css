@@ -1,0 +1,41 @@
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+  padding: 40px;
+}
+
+button {
+  margin: 10px;
+  padding: 15px;
+  border: none;
+  border-radius: 6px;
+  background: #22c55e;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #16a34a;
+}
+
+#conteudo {
+  margin-top: 30px;
+  padding: 20px;
+  background: #1e293b;
+  border-radius: 10px;
+}
+function salvarCliente() {
+  fetch("http://localhost:3000/clientes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nome: "João",
+      telefone: "99999-9999"
+    })
+  })
+  .then(res => res.json())
+  .then(data => alert("Cliente salvo!"));
+}

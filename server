@@ -1,0 +1,10 @@
+const db = require("./db");
+
+app.post("/clientes", (req, res) => {
+  const { nome, telefone } = req.body;
+  db.run(
+    "INSERT INTO clientes (nome, telefone) VALUES (?,?)",
+    [nome, telefone]
+  );
+  res.json({ status: "salvo" });
+});
