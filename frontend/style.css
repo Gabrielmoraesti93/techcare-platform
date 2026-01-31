@@ -27,15 +27,14 @@ button:hover {
   background: #1e293b;
   border-radius: 10px;
 }
-function salvarCliente() {
-  fetch("http://localhost:3000/clientes", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      nome: "João",
-      telefone: "99999-9999"
-    })
-  })
-  .then(res => res.json())
-  .then(data => alert("Cliente salvo!"));
+
+#conteudo p {
+  font-size: 18px;
 }
+#conteudo img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-top: 20px;
+} 
+
