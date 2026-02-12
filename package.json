@@ -1,17 +1,19 @@
 {
   "name": "techcare-platform",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "TechCare Backend API",
+  "main": "Backend.js",
   "type": "commonjs",
+  "scripts": {
+    "start": "node Backend.js",
+    "dev": "node Backend.js"
+  },
   "dependencies": {
     "express": "^5.2.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
+
+
