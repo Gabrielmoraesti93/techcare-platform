@@ -14,7 +14,7 @@ const options = {
       description: "Documentação da API TechCare Platform"
     }
   },
-  apis: ["./src/app.js"]
+  apis: ["./routes/clienteRoutes.js"]
 };
 
 const swaggerSpec = swaggerJsdoc(options);
