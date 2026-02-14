@@ -1,23 +1,18 @@
-const cors = require("cors");
-
-app.use(cors({
-  origin: "*"
-}));
-
-
 const express = require("express");
+const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 
 const clienteRoutes = require("./routes/clienteRoutes");
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
-const app = express();
-app.use(cors());
+const app = express(); // ✅ Primeiro cria o app
+
+// Middlewares
+app.use(cors({ origin: "*" })); // Libera todas origens temporariamente
 app.use(express.json());
 
-
-// Swagger
+// Swagger config
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -33,7 +28,7 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Rota raiz (opcional, mas profissional)
+// Rota raiz
 app.get("/", (req, res) => {
   res.json({
     message: "TechCare API está online 🚀",
@@ -41,17 +36,8 @@ app.get("/", (req, res) => {
   });
 });
 
-// Rotas
-app.use("/clientes", clienteRoutes);
+// Rot
 
-// Middleware de erro
-app.use(errorHandler);
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
 
 
 
