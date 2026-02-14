@@ -1,11 +1,20 @@
 const clienteService = require("../services/clienteService");
 
-exports.listarClientes = (req, res) => {
-  const clientes = clienteService.listar();
-  res.json(clientes);
+exports.listarClientes = async (req, res, next) => {
+  try {
+    const clientes = await clienteService.listar();
+    res.json(clientes);
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.criarCliente = (req, res) => {
-  const cliente = clienteService.criar(req.body);
-  res.json({ status: "ok", cliente });
+exports.criarCliente = async (req, res, next) => {
+  try {
+    const cliente = await clienteService.criar(req.body);
+    res.json({ status: "ok", cliente });
+  } catch (error) {
+    next(error);
+  }
 };
+
