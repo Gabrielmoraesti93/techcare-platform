@@ -1,5 +1,10 @@
 const cors = require("cors");
 
+app.use(cors({
+  origin: "*"
+}));
+
+
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
