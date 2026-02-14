@@ -4,15 +4,19 @@
   "description": "TechCare Backend API",
   "main": "Backend.js",
   "type": "commonjs",
-  "scripts": {
-    "start": "node Backend.js",
-    "dev": "node Backend.js"
-  },
+ "scripts": {
+  "dev": "nodemon Backend.js",
+  "start": "node Backend.js"
+}
+,
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "sqlite3": "^5.1.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }
