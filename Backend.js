@@ -6,13 +6,13 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const clienteRoutes = require("./routes/clienteRoutes");
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
-const app = express(); // ✅ Primeiro cria o app
+const app = express();
 
 // Middlewares
-app.use(cors({ origin: "*" })); // Libera todas origens temporariamente
+app.use(cors());
 app.use(express.json());
 
-// Swagger config
+// Swagger
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -26,17 +26,8 @@ const options = {
 };
 
 const swaggerSpec = swaggerJsdoc(options);
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec)
 
-// Rota raiz
-app.get("/", (req, res) => {
-  res.json({
-    message: "TechCare API está online 🚀",
-    docs: "/api/docs"
-  });
-});
-
-// Rot
 
 
 
