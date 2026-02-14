@@ -8,7 +8,9 @@ const clienteRoutes = require("./routes/clienteRoutes");
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
+
 
 // Swagger
 const options = {
