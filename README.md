@@ -69,8 +69,9 @@ cd techcare-platform
 cd Backend
 npm install
 npm start
-http://localhost:3000
+${API_URL}
 cd frontend
 npm install
 npm run dev
-http://localhost:5173
+Backend: https://moraes-tech.onrender.com
+Swagger: https://moraes-tech.onrender.com/api/docs
