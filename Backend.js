@@ -35,6 +35,12 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+const clienteRoutes = require("./routes/clienteRoutes");
+const { errorHandler } = require("./middlewares/errorMiddleware");
+
+app.use("/clientes", clienteRoutes);
+
+app.use(errorHandler);
 
 
 
