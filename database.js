@@ -1,21 +1,62 @@
 const sqlite3 = require("sqlite3").verbose();
 
-const db = new sqlite3.Database("./techcare.db", (err) => {
-  if (err) {
-    console.error("Erro ao conectar no banco:", err.message);
-  } else {
-    console.log("Banco SQLite conectado.");
-  }
+const db = new sqlite3.Database("./techcare.db");
+
+
+db.serialize(()=>{
+
+
+db.run(`
+
+CREATE TABLE IF NOT EXISTS users(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+email TEXT UNIQUE,
+
+password TEXT
+
+)
+
+`);
+
+
+
+db.run(`
+
+CREATE TABLE IF NOT EXISTS clientes(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+nome TEXT,
+
+telefone TEXT
+
+)
+
+`);
+
+
+
+db.run(`
+
+CREATE TABLE IF NOT EXISTS chamados(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+titulo TEXT,
+
+descricao TEXT,
+
+status TEXT
+
+)
+
+`);
+
+
 });
 
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS clientes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      telefone TEXT
-    )
-  `);
-});
 
-module.exports = db;
+module.exports=db;
+
