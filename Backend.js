@@ -8,25 +8,95 @@ const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+
+// CORS
+app.use(cors({
+  origin: "*"
+}));
+
+
+// JSON
 app.use(express.json());
 
-// Swagger
+
+
+// Swagger config
+
 const options = {
+
   definition: {
+
     openapi: "3.0.0",
+
     info: {
+
       title: "TechCare API",
+
       version: "1.0.0",
-      description: "Documentação da API TechCare Platform"
+
+      description: "API TechCare Platform"
+
     }
+
   },
+
   apis: ["./routes/*.js"]
+
 };
 
+
 const swaggerSpec = swaggerJsdoc(options);
+
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
+
+
+// ROOT
+
+app.get("/", (req,res)=>{
+
+  res.json({
+
+    status:"online",
+
+    docs:"/api/docs"
+
+  });
+
+});
+
+
+
+
+// ROTAS
+
+app.use("/clientes", clienteRoutes);
+
+
+
+
+// ERROR
+
+app.use(errorHandler);
+
+
+
+
+// PORT
+
+const PORT = process.env.PORT || 3000;
+
+
+
+// START SERVER
+
+app.listen(PORT, ()=>{
+
+  console.log("Servidor rodando na porta", PORT);
+
+});
+
 
 
 

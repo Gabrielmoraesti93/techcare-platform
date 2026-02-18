@@ -1,77 +1,69 @@
-console.log("SCRIPT CARREGADO OK");
-
 const API_URL = "https://moraes-tech.onrender.com";
 
-
-// SALVAR CLIENTE
 function salvarCliente() {
 
-console.log("Botão clicado");
+  const nome = document.querySelector('input[placeholder="Nome"]').value;
+  const telefone = document.querySelector('input[placeholder="Telefone"]').value;
 
-fetch(`${API_URL}/clientes`, {
+  console.log("Enviando:", nome, telefone);
 
-method: "POST",
+  fetch(`${API_URL}/clientes`, {
 
-headers: {
+    method: "POST",
 
-"Content-Type": "application/json"
+    headers: {
+      "Content-Type": "application/json"
+    },
 
-},
+    body: JSON.stringify({
+      nome,
+      telefone
+    })
 
-body: JSON.stringify({
+  })
+  .then(res => res.json())
+  .then(data => {
 
-nome: document.querySelector('input[placeholder="Nome"]').value,
+    console.log(data);
 
-telefone: document.querySelector('input[placeholder="Telefone"]').value
+    alert("Cliente salvo com sucesso");
 
-})
+    listarClientes();
 
-})
+  })
+  .catch(err => {
 
-.then(res => res.json())
+    console.error(err);
 
-.then(data => {
+    alert("Erro ao salvar");
 
-console.log(data);
-
-alert("Cliente salvo com sucesso!");
-
-listarClientes();
-
-})
-
-.catch(err => console.error("Erro:", err));
-
-}
-
-
-
-// LISTAR CLIENTES
-
-async function listarClientes() {
-
-const response = await fetch(`${API_URL}/clientes`);
-
-const clientes = await response.json();
-
-const lista = document.getElementById("lista-clientes");
-
-lista.innerHTML = "";
-
-clientes.forEach(cliente => {
-
-const li = document.createElement("li");
-
-li.textContent = `${cliente.nome} - ${cliente.telefone}`;
-
-lista.appendChild(li);
-
-});
+  });
 
 }
 
 
 
-// CARREGAR AO INICIAR
+async function listarClientes(){
 
-window.onload = listarClientes;
+  const response = await fetch(`${API_URL}/clientes`);
+
+  const clientes = await response.json();
+
+  const lista = document.getElementById("lista-clientes");
+
+  if(!lista) return;
+
+  lista.innerHTML = "";
+
+  clientes.forEach(cliente => {
+
+    const li = document.createElement("li");
+
+    li.textContent = `${cliente.nome} - ${cliente.telefone}`;
+
+    lista.appendChild(li);
+
+  });
+
+}
+
