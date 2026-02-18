@@ -1,3 +1,5 @@
+console.log("SCRIPT CARREGADO OK");
+
 const API_URL = "https://moraes-tech.onrender.com";
 
 
