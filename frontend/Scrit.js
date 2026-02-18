@@ -1,69 +1,135 @@
 const API_URL = "https://moraes-tech.onrender.com";
 
+
+
+/* DASHBOARD */
+
+function mostrarDashboard() {
+
+document.getElementById("conteudo").innerHTML = `
+
+<h1>Dashboard</h1>
+
+<p>Bem vindo ao sistema Moraes Tech</p>
+
+`;
+
+}
+
+
+
+/* FORM CADASTRO */
+
+function mostrarCadastro() {
+
+document.getElementById("conteudo").innerHTML = `
+
+<h2>Cadastrar Cliente</h2>
+
+<input id="nome" placeholder="Nome"><br><br>
+
+<input id="telefone" placeholder="Telefone"><br><br>
+
+<button onclick="salvarCliente()">Salvar</button>
+
+`;
+
+}
+
+
+
+/* SALVAR CLIENTE */
+
 function salvarCliente() {
 
-  const nome = document.querySelector('input[placeholder="Nome"]').value;
-  const telefone = document.querySelector('input[placeholder="Telefone"]').value;
+const nome = document.getElementById("nome").value;
 
-  console.log("Enviando:", nome, telefone);
+const telefone = document.getElementById("telefone").value;
 
-  fetch(`${API_URL}/clientes`, {
 
-    method: "POST",
 
-    headers: {
-      "Content-Type": "application/json"
-    },
+fetch(`${API_URL}/clientes`, {
 
-    body: JSON.stringify({
-      nome,
-      telefone
-    })
+method: "POST",
 
-  })
-  .then(res => res.json())
-  .then(data => {
+headers: {
 
-    console.log(data);
+"Content-Type": "application/json"
 
-    alert("Cliente salvo com sucesso");
+},
 
-    listarClientes();
+body: JSON.stringify({
 
-  })
-  .catch(err => {
+nome,
 
-    console.error(err);
+telefone
 
-    alert("Erro ao salvar");
+})
 
-  });
+})
+
+.then(res => res.json())
+
+.then(data => {
+
+alert("Cliente salvo com sucesso");
+
+mostrarClientes();
+
+})
+
+.catch(err => console.error(err));
+
+}
+
+
+
+/* LISTAR CLIENTES */
+
+function mostrarClientes() {
+
+fetch(`${API_URL}/clientes`)
+
+.then(res => res.json())
+
+.then(clientes => {
+
+let html = `
+
+<h2>Lista de Clientes</h2>
+
+<ul>
+
+`;
+
+clientes.forEach(cliente => {
+
+html += `
+
+<li>
+
+${cliente.nome} - ${cliente.telefone}
+
+</li>
+
+`;
+
+});
+
+html += "</ul>";
+
+document.getElementById("conteudo").innerHTML = html;
+
+})
+
+.catch(err => console.error(err));
 
 }
 
 
 
-async function listarClientes(){
+/* INICIAR */
 
-  const response = await fetch(`${API_URL}/clientes`);
+mostrarDashboard();
 
-  const clientes = await response.json();
-
-  const lista = document.getElementById("lista-clientes");
-
-  if(!lista) return;
-
-  lista.innerHTML = "";
-
-  clientes.forEach(cliente => {
-
-    const li = document.createElement("li");
-
-    li.textContent = `${cliente.nome} - ${cliente.telefone}`;
-
-    lista.appendChild(li);
-
-  });
-
-}
 
