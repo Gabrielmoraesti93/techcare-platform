@@ -7,7 +7,7 @@
 
 <title>Moraes Tech</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 </head>
 
@@ -18,41 +18,35 @@
 <div class="container">
 
 
-<!-- SIDEBAR -->
+  <!-- MENU LATERAL -->
+  <div class="sidebar">
 
-<div class="sidebar">
+    <h2>Moraes Tech</h2>
 
-<h2>Moraes Tech</h2>
+    <a href="#" onclick="mostrarDashboard()">Dashboard</a>
 
-<a href="dashboard.html">Dashboard</a>
+    <a href="#" onclick="mostrarClientes()">Clientes</a>
 
-<a href="clientes.html">Clientes</a>
+    <a href="#" onclick="mostrarCadastro()">Cadastrar Cliente</a>
 
-<a href="cadastrar.html">Cadastrar Cliente</a>
-
-
-</div>
+  </div>
 
 
 
-<!-- CONTEUDO -->
+  <!-- AREA DO CONTEUDO -->
+  <div class="content">
 
-<div class="content" id="conteudo">
+    <div id="conteudo"></div>
 
-<h1>Bem vindo ao sistema</h1>
-
-<p>Sistema profissional de atendimento técnico</p>
-
-</div>
+  </div>
 
 
 </div>
 
 
 
-<!-- SCRIPT -->
-
-<script src="Script.js"></script>
+<!-- SCRIPT SEMPRE NO FINAL -->
+<script src="./script.js"></script>
 
 
 </body>
