@@ -1,56 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moraes Tech</title>
 
-<meta charset="UTF-8">
-
-<title>Moraes Tech</title>
-
-<link rel="stylesheet" href="css/style.css">
-
+  <!-- Se o style.css estiver na mesma pasta do index.html -->
+  <link rel="stylesheet" href="./style.css" />
 </head>
 
-
 <body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Moraes Tech</h2>
 
+      <a href="#" onclick="mostrarDashboard(); return false;">Dashboard</a>
+      <a href="#" onclick="mostrarClientes(); return false;">Clientes</a>
+      <a href="#" onclick="mostrarCadastro(); return false;">Cadastrar Cliente</a>
+    </div>
 
-<div class="container">
-
-
-  <!-- MENU LATERAL -->
-  <div class="sidebar">
-
-    <h2>Moraes Tech</h2>
-
-    <a href="#" onclick="mostrarDashboard()">Dashboard</a>
-
-    <a href="#" onclick="mostrarClientes()">Clientes</a>
-
-    <a href="#" onclick="mostrarCadastro()">Cadastrar Cliente</a>
-
+    <div class="content">
+      <div id="conteudo"></div>
+    </div>
   </div>
 
-
-
-  <!-- AREA DO CONTEUDO -->
-  <div class="content">
-
-    <div id="conteudo"></div>
-
-  </div>
-
-
-</div>
-
-
-
-<!-- SCRIPT SEMPRE NO FINAL -->
-<script src="./script.js"></script>
-
-
+  <!-- IMPORTANTE: carregar o JS no final do body -->
+  <script src="./Script.js"></script>
 </body>
-
 </html>
 
 
