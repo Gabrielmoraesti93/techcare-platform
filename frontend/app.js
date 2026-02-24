@@ -1,39 +1,126 @@
-function mostrarCadastro() {
-  document.getElementById("conteudo").innerHTML = `
-    <h3>Cadastrar Cliente</h3>
-    <input placeholder="Nome"><br><br>
-    <input placeholder="Telefone"><br><br>
-    <button>Salvar</button>
-  `;
+// frontend/js/app.js
+const API_URL = "https://moraes-tech.onrender.com"; // ajuste para seu backend (Render)
+
+function setConteudo(html) {
+  const el = document.getElementById("conteudo");
+  if (!el) {
+    console.error("Elemento #conteudo não existe no HTML");
+    return;
+  }
+  el.innerHTML = html;
 }
 
-function mostrarChamado() {
-  document.getElementById("conteudo").innerHTML = `
-    <h3>Abrir Chamado</h3>
-    <input placeholder="Problema"><br><br>
-    <textarea placeholder="Descrição"></textarea><br><br>
-    <button>Abrir</button>
-  `;
+/* DASHBOARD */
+function mostrarDashboard(e) {
+  if (e) e.preventDefault();
+
+  setConteudo(`
+    <h1>Dashboard</h1>
+    <p>Bem-vindo ao sistema Moraes Tech</p>
+  `);
 }
 
-function listarChamados() {
-  document.getElementById("conteudo").innerHTML = `
-    <h3>Lista de Chamados</h3>
-    <p>Cliente: João - Status: Em andamento</p>
-    <p>Cliente: Maria - Status: Finalizado</p>
-  `;
+/* FORM CADASTRO */
+function mostrarCadastro(e) {
+  if (e) e.preventDefault();
+
+  setConteudo(`
+    <h2>Cadastrar Cliente</h2>
+
+    <label>Nome</label><br />
+    <input id="nome" placeholder="Nome" /><br /><br />
+
+    <label>Telefone</label><br />
+    <input id="telefone" placeholder="Telefone" /><br /><br />
+
+    <button id="btn-salvar">Salvar</button>
+    <p id="msg" style="margin-top:12px;"></p>
+  `);
+
+  // liga o botão ao evento (mais confiável do que onclick no HTML)
+  const btn = document.getElementById("btn-salvar");
+  btn.addEventListener("click", salvarCliente);
 }
 
-// CRM
-function cadastrarLead() {
-  document.getElementById("conteudo").innerHTML = `
-    <h3>Cadastrar Lead</h3>
-    <input placeholder="Nome"><br><br>
-    <input placeholder="Telefone"><br><br>
-    <button>Salvar</button>
-  `;
+/* SALVAR CLIENTE */
+async function salvarCliente() {
+  const nome = document.getElementById("nome")?.value?.trim();
+  const telefone = document.getElementById("telefone")?.value?.trim();
+  const msg = document.getElementById("msg");
+
+  if (!nome || !telefone) {
+    if (msg) msg.textContent = "Preencha nome e telefone.";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/clientes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome, telefone }),
+    });
+
+    // se backend retornar erro, mostrar
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Erro ${res.status}: ${text}`);
+    }
+
+    await res.json().catch(() => ({})); // caso backend não retorne json certinho
+
+    alert("Cliente salvo com sucesso!");
+    mostrarClientes();
+  } catch (err) {
+    console.error(err);
+    alert("Falha ao salvar. Veja o console (F12).");
+  }
 }
 
-function simularMensagem() {
-  alert("Mensagem enviada para o cliente via WhatsApp!");
+/* LISTAR CLIENTES */
+async function mostrarClientes(e) {
+  if (e) e.preventDefault();
+
+  setConteudo(`<h2>Lista de Clientes</h2><p>Carregando...</p>`);
+
+  try {
+    const res = await fetch(`${API_URL}/clientes`);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Erro ${res.status}: ${text}`);
+    }
+
+    const clientes = await res.json();
+
+    let html = `
+      <h2>Lista de Clientes</h2>
+      <ul id="lista-clientes"></ul>
+    `;
+
+    setConteudo(html);
+
+    const ul = document.getElementById("lista-clientes");
+    ul.innerHTML = "";
+
+    clientes.forEach((c) => {
+      const li = document.createElement("li");
+      li.textContent = `${c.nome} - ${c.telefone}`;
+      ul.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+    setConteudo(`
+      <h2>Lista de Clientes</h2>
+      <p>Erro ao carregar clientes. Abra o console (F12) para ver detalhes.</p>
+    `);
+  }
 }
+
+/* EXPORTAR PARA O HTML (para funcionar onclick="...") */
+window.mostrarDashboard = mostrarDashboard;
+window.mostrarCadastro = mostrarCadastro;
+window.mostrarClientes = mostrarClientes;
+
+/* INICIAR */
+window.addEventListener("load", () => {
+  mostrarDashboard();
+});

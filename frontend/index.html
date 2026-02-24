@@ -2,30 +2,47 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Moraes Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Moraes Tech - Painel</title>
 
-  <!-- Se o style.css estiver na mesma pasta do index.html -->
-  <link rel="stylesheet" href="./style.css" />
+  <!-- Ajuste o caminho se seu CSS estiver em outro local -->
+  <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 
 <body>
   <div class="container">
-    <div class="sidebar">
+    <aside class="sidebar">
       <h2>Moraes Tech</h2>
 
-      <a href="#" onclick="mostrarDashboard(); return false;">Dashboard</a>
-      <a href="#" onclick="mostrarClientes(); return false;">Clientes</a>
-      <a href="#" onclick="mostrarCadastro(); return false;">Cadastrar Cliente</a>
-    </div>
+      <!-- Menu (1 página só) -->
+      <a href="#" onclick="mostrarDashboard(event)">Dashboard</a>
+      <a href="#" onclick="mostrarClientes(event)">Clientes</a>
+      <a href="#" onclick="mostrarCadastro(event)">Cadastrar Cliente</a>
 
-    <div class="content">
-      <div id="conteudo"></div>
-    </div>
+      <div class="sidebar-footer">
+        <small>v0.1</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-subtitle">Visão geral do sistema</p>
+        </div>
+
+        <div class="topbar-right">
+          <div class="pill">Ambiente: <b>DEV</b></div>
+        </div>
+      </header>
+
+      <!-- Aqui o conteúdo vai trocar via JS -->
+      <section class="content" id="conteudo"></section>
+    </main>
   </div>
 
-  <!-- IMPORTANTE: carregar o JS no final do body -->
-  <script src="./Script.js"></script>
+  <!-- Ajuste o caminho se seu JS estiver em outro local -->
+  <script src="./assets/js/app.js"></script>
 </body>
 </html>
 
