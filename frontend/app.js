@@ -123,4 +123,72 @@ window.mostrarClientes = mostrarClientes;
 /* INICIAR */
 window.addEventListener("load", () => {
   mostrarDashboard();
+
+  function mostrarNovoChamado(event){
+
+if(event) event.preventDefault();
+
+setHeader("Novo Chamado","Abrir chamado técnico");
+
+setConteudo(`
+
+<input id="cliente" placeholder="Cliente"><br><br>
+
+<textarea id="problema" placeholder="Problema"></textarea><br><br>
+
+<button onclick="salvarChamado()">Salvar</button>
+
+`);
+
+}
+
+function salvarChamado(){
+
+const cliente = document.getElementById("cliente").value;
+
+const problema = document.getElementById("problema").value;
+
+fetch(`${API_URL}/chamados`,{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({cliente,problema})
+
+})
+
+.then(()=>{
+
+alert("Chamado criado");
+
+mostrarChamados();
+
+});
+
+}
+
+function mostrarChamados(event){
+
+if(event) event.preventDefault();
+
+fetch(`${API_URL}/chamados`)
+
+.then(res=>res.json())
+
+.then(data=>{
+
+let html="<h2>Chamados</h2>";
+
+data.forEach(c=>{
+
+html+=`<p>${c.cliente} - ${c.problema} - ${c.status}</p>`;
+
+});
+
+setConteudo(html);
+
+});
+
+}
 });
