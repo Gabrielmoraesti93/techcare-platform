@@ -39,19 +39,13 @@ telefone TEXT
 
 
 db.run(`
-
-CREATE TABLE IF NOT EXISTS chamados(
-
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-titulo TEXT,
-
-descricao TEXT,
-
-status TEXT
-
+CREATE TABLE IF NOT EXISTS chamados (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cliente TEXT,
+  problema TEXT,
+  status TEXT DEFAULT 'aberto',
+  data DATETIME DEFAULT CURRENT_TIMESTAMP
 )
-
 `);
 
 

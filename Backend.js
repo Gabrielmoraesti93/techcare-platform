@@ -95,9 +95,10 @@ app.listen(PORT, ()=>{
 
   console.log("Servidor rodando na porta", PORT);
 
+const chamadoRoutes = require("./routes/chamadoRoutes");
+
+app.use("/chamados", chamadoRoutes);
 });
-
-
 
 
 
