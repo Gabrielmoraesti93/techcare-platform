@@ -204,6 +204,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
   mostrarDashboard();
 
+  const API_URL = "https://moraes-tech.onrender.com";
+
+async function login(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, senha }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Erro no login");
+    return;
+  }
+
+  localStorage.setItem("token", data.token);
+  window.location.href = "index.html";
+}
 });
 
 

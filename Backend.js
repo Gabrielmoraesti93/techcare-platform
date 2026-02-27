@@ -98,6 +98,14 @@ app.listen(PORT, ()=>{
 const chamadoRoutes = require("./routes/chamadoRoutes");
 
 app.use("/chamados", chamadoRoutes);
+
+const authRoutes = require("./routes/authRoutes");
+const { authMiddleware } = require("./middlewares/authMiddleware");
+
+app.use("/auth", authRoutes);
+
+// proteger rotas:
+app.use("/clientes", authMiddleware, clienteRoutes);
 });
 
 

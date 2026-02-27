@@ -54,3 +54,12 @@ CREATE TABLE IF NOT EXISTS chamados (
 
 module.exports=db;
 
+db.run(`
+CREATE TABLE IF NOT EXISTS usuarios (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  senha_hash TEXT NOT NULL,
+  criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+`);
