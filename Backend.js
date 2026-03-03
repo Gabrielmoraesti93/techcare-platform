@@ -4,113 +4,58 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 
 const clienteRoutes = require("./routes/clienteRoutes");
+const chamadoRoutes = require("./routes/chamadoRoutes");
+const authRoutes = require("./routes/authRoutes");
+
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
 
+/* CORS */
+app.use(cors({ origin: "*" }));
 
-// CORS
-app.use(cors({
-  origin: "*"
-}));
-
-
-// JSON
+/* JSON */
 app.use(express.json());
 
-
-
-// Swagger config
-
+/* Swagger config */
 const options = {
-
   definition: {
-
     openapi: "3.0.0",
-
     info: {
-
       title: "TechCare API",
-
       version: "1.0.0",
-
-      description: "API TechCare Platform"
-
-    }
-
+      description: "API TechCare Platform",
+    },
   },
-
-  apis: ["./routes/*.js"]
-
+  apis: ["./routes/*.js"],
 };
 
-
 const swaggerSpec = swaggerJsdoc(options);
-
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-
-
-
-// ROOT
-
-app.get("/", (req,res)=>{
-
+/* ROOT */
+app.get("/", (req, res) => {
   res.json({
-
-    status:"online",
-
-    docs:"/api/docs"
-
+    status: "online",
+    docs: "/api/docs",
   });
-
 });
 
-
-
-
-// ROTAS
-
+/* ROTAS */
+app.use("/auth", authRoutes);
 app.use("/clientes", clienteRoutes);
-
-
-
-
-// ERROR
-
-app.use(errorHandler);
-
-
-
-
-// PORT
-
-const PORT = process.env.PORT || 3000;
-
-
-
-// START SERVER
-
-app.listen(PORT, ()=>{
-
-  console.log("Servidor rodando na porta", PORT);
-
-const chamadoRoutes = require("./routes/chamadoRoutes");
-
 app.use("/chamados", chamadoRoutes);
 
-const authRoutes = require("./routes/authRoutes");
-const { authMiddleware } = require("./middlewares/authMiddleware");
+/* ERROR */
+app.use(errorHandler);
 
-app.use("/auth", authRoutes);
+/* PORT */
+const PORT = process.env.PORT || 3000;
 
-// proteger rotas:
-app.use("/clientes", authMiddleware, clienteRoutes);
+/* START SERVER */
+app.listen(PORT, () => {
+  console.log("Servidor rodando na porta", PORT);
 });
-
-const { authMiddleware } = require("./middlewares/authMiddleware");
-app.use("/clientes", authMiddleware, clienteRoutes);
-
 
 
 
