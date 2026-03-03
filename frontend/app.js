@@ -1,194 +1,113 @@
-// frontend/js/app.js
-const API_URL = "https://moraes-tech.onrender.com"; // ajuste para seu backend (Render)
+const API_URL = "https://moraes-tech.onrender.com";
+
+// Protege o painel
+if (!localStorage.getItem("token")) {
+  window.location.href = "login.html";
+}
+
+function authHeaders() {
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("token")}`
+  };
+}
 
 function setConteudo(html) {
-  const el = document.getElementById("conteudo");
-  if (!el) {
-    console.error("Elemento #conteudo não existe no HTML");
-    return;
-  }
-  el.innerHTML = html;
+  document.getElementById("conteudo").innerHTML = html;
 }
 
 /* DASHBOARD */
-function mostrarDashboard(e) {
-  if (e) e.preventDefault();
+function mostrarDashboard(event) {
+  if (event) event.preventDefault();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   setConteudo(`
     <h1>Dashboard</h1>
-    <p>Bem-vindo ao sistema Moraes Tech</p>
+    <p>Bem vindo ao sistema Moraes Tech</p>
+    <p><b>Usuário:</b> ${user?.email || "desconhecido"}</p>
   `);
 }
 
 /* FORM CADASTRO */
-function mostrarCadastro(e) {
-  if (e) e.preventDefault();
+function mostrarCadastro(event) {
+  if (event) event.preventDefault();
 
   setConteudo(`
     <h2>Cadastrar Cliente</h2>
-
-    <label>Nome</label><br />
-    <input id="nome" placeholder="Nome" /><br /><br />
-
-    <label>Telefone</label><br />
-    <input id="telefone" placeholder="Telefone" /><br /><br />
-
-    <button id="btn-salvar">Salvar</button>
-    <p id="msg" style="margin-top:12px;"></p>
+    <input id="nome" placeholder="Nome"><br><br>
+    <input id="telefone" placeholder="Telefone"><br><br>
+    <button onclick="salvarCliente()">Salvar</button>
   `);
-
-  // liga o botão ao evento (mais confiável do que onclick no HTML)
-  const btn = document.getElementById("btn-salvar");
-  btn.addEventListener("click", salvarCliente);
 }
 
 /* SALVAR CLIENTE */
 async function salvarCliente() {
-  const nome = document.getElementById("nome")?.value?.trim();
-  const telefone = document.getElementById("telefone")?.value?.trim();
-  const msg = document.getElementById("msg");
+  const nome = document.getElementById("nome").value.trim();
+  const telefone = document.getElementById("telefone").value.trim();
 
   if (!nome || !telefone) {
-    if (msg) msg.textContent = "Preencha nome e telefone.";
+    alert("Preencha nome e telefone.");
     return;
   }
 
   try {
     const res = await fetch(`${API_URL}/clientes`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, telefone }),
+      headers: authHeaders(),
+      body: JSON.stringify({ nome, telefone })
     });
 
-    // se backend retornar erro, mostrar
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Erro ${res.status}: ${text}`);
-    }
+    const data = await res.json();
 
-    await res.json().catch(() => ({})); // caso backend não retorne json certinho
+    if (!res.ok) {
+      alert(data?.error || "Erro ao salvar cliente.");
+      return;
+    }
 
     alert("Cliente salvo com sucesso!");
     mostrarClientes();
   } catch (err) {
     console.error(err);
-    alert("Falha ao salvar. Veja o console (F12).");
+    alert("Erro de conexão com o servidor.");
   }
 }
 
 /* LISTAR CLIENTES */
-async function mostrarClientes(e) {
-  if (e) e.preventDefault();
-
-  setConteudo(`<h2>Lista de Clientes</h2><p>Carregando...</p>`);
+async function mostrarClientes(event) {
+  if (event) event.preventDefault();
 
   try {
-    const res = await fetch(`${API_URL}/clientes`);
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Erro ${res.status}: ${text}`);
-    }
+    const res = await fetch(`${API_URL}/clientes`, {
+      headers: authHeaders()
+    });
 
     const clientes = await res.json();
 
-    let html = `
-      <h2>Lista de Clientes</h2>
-      <ul id="lista-clientes"></ul>
-    `;
+    if (!res.ok) {
+      setConteudo(`<p>Erro ao carregar clientes: ${clientes?.error || "desconhecido"}</p>`);
+      return;
+    }
+
+    let html = `<h2>Lista de Clientes</h2><ul>`;
+    clientes.forEach(c => {
+      html += `<li>${c.nome} - ${c.telefone}</li>`;
+    });
+    html += `</ul>`;
 
     setConteudo(html);
-
-    const ul = document.getElementById("lista-clientes");
-    ul.innerHTML = "";
-
-    clientes.forEach((c) => {
-      const li = document.createElement("li");
-      li.textContent = `${c.nome} - ${c.telefone}`;
-      ul.appendChild(li);
-    });
   } catch (err) {
     console.error(err);
-    setConteudo(`
-      <h2>Lista de Clientes</h2>
-      <p>Erro ao carregar clientes. Abra o console (F12) para ver detalhes.</p>
-    `);
+    setConteudo(`<p>Erro de conexão ao carregar clientes.</p>`);
   }
 }
 
-/* EXPORTAR PARA O HTML (para funcionar onclick="...") */
-window.mostrarDashboard = mostrarDashboard;
-window.mostrarCadastro = mostrarCadastro;
-window.mostrarClientes = mostrarClientes;
+/* LOGOUT */
+function logout(event) {
+  if (event) event.preventDefault();
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
 
 /* INICIAR */
-window.addEventListener("load", () => {
-  mostrarDashboard();
-
-  function mostrarNovoChamado(event){
-
-if(event) event.preventDefault();
-
-setHeader("Novo Chamado","Abrir chamado técnico");
-
-setConteudo(`
-
-<input id="cliente" placeholder="Cliente"><br><br>
-
-<textarea id="problema" placeholder="Problema"></textarea><br><br>
-
-<button onclick="salvarChamado()">Salvar</button>
-
-`);
-
-}
-
-function salvarChamado(){
-
-const cliente = document.getElementById("cliente").value;
-
-const problema = document.getElementById("problema").value;
-
-fetch(`${API_URL}/chamados`,{
-
-method:"POST",
-
-headers:{"Content-Type":"application/json"},
-
-body:JSON.stringify({cliente,problema})
-
-})
-
-.then(()=>{
-
-alert("Chamado criado");
-
-mostrarChamados();
-
-});
-
-}
-
-function mostrarChamados(event){
-
-if(event) event.preventDefault();
-
-fetch(`${API_URL}/chamados`)
-
-.then(res=>res.json())
-
-.then(data=>{
-
-let html="<h2>Chamados</h2>";
-
-data.forEach(c=>{
-
-html+=`<p>${c.cliente} - ${c.problema} - ${c.status}</p>`;
-
-});
-
-setConteudo(html);
-
-});
-
-}
-});
+mostrarDashboard();

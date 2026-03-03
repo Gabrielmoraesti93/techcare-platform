@@ -108,7 +108,8 @@ app.use("/auth", authRoutes);
 app.use("/clientes", authMiddleware, clienteRoutes);
 });
 
-
+const { authMiddleware } = require("./middlewares/authMiddleware");
+app.use("/clientes", authMiddleware, clienteRoutes);
 
 
 
