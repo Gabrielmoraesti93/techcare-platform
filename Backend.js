@@ -7,17 +7,18 @@ const clienteRoutes = require("./routes/clienteRoutes");
 const chamadoRoutes = require("./routes/chamadoRoutes");
 const authRoutes = require("./routes/authRoutes");
 
+const { authMiddleware } = require("./middlewares/authMiddleware");
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
 
-/* CORS */
+// CORS
 app.use(cors({ origin: "*" }));
 
-/* JSON */
+// JSON
 app.use(express.json());
 
-/* Swagger config */
+// Swagger
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -33,26 +34,25 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-/* ROOT */
+// ROOT
 app.get("/", (req, res) => {
-  res.json({
-    status: "online",
-    docs: "/api/docs",
-  });
+  res.json({ status: "online", docs: "/api/docs" });
 });
 
-/* ROTAS */
+// ROTAS PUBLICAS
 app.use("/auth", authRoutes);
-app.use("/clientes", clienteRoutes);
-app.use("/chamados", chamadoRoutes);
 
-/* ERROR */
+// ROTAS PROTEGIDAS
+app.use("/clientes", authMiddleware, clienteRoutes);
+app.use("/chamados", authMiddleware, chamadoRoutes);
+
+// ERROR
 app.use(errorHandler);
 
-/* PORT */
+// PORT
 const PORT = process.env.PORT || 3000;
 
-/* START SERVER */
+// START
 app.listen(PORT, () => {
   console.log("Servidor rodando na porta", PORT);
 });

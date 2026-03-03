@@ -3,8 +3,6 @@ const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./techcare.db");
 
 db.serialize(() => {
-
-  // Empresas (multi-tenant SaaS)
   db.run(`
     CREATE TABLE IF NOT EXISTS empresas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -13,43 +11,46 @@ db.serialize(() => {
     )
   `);
 
-  // Usuários vinculados à empresa
   db.run(`
     CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       empresa_id INTEGER NOT NULL,
       nome TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
+      email TEXT NOT NULL,
       senha_hash TEXT NOT NULL,
       criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (empresa_id) REFERENCES empresas(id)
     )
   `);
 
-  // Clientes vinculados à empresa
+  // opcional: evitar email repetido na mesma empresa
+  db.run(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_empresa_email
+    ON usuarios(empresa_id, email)
+  `);
+
   db.run(`
     CREATE TABLE IF NOT EXISTS clientes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       empresa_id INTEGER NOT NULL,
-      nome TEXT,
+      nome TEXT NOT NULL,
       telefone TEXT,
+      criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (empresa_id) REFERENCES empresas(id)
     )
   `);
 
-  // Chamados vinculados à empresa
   db.run(`
     CREATE TABLE IF NOT EXISTS chamados (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       empresa_id INTEGER NOT NULL,
-      cliente TEXT,
-      problema TEXT,
+      cliente TEXT NOT NULL,
+      problema TEXT NOT NULL,
       status TEXT DEFAULT 'aberto',
       data DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (empresa_id) REFERENCES empresas(id)
     )
   `);
-
 });
 
 module.exports = db;
