@@ -5,23 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Moraes Tech - Painel</title>
 
-  <!-- Ajuste o caminho se seu CSS estiver em outro local -->
+  <!-- CSS -->
   <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 
 <body>
   <div class="container">
     <aside class="sidebar">
-      <h2>Moraes Tech</h2>
+      <div class="brand">
+        <h2>Moraes Tech</h2>
+        <small class="muted">Painel Admin</small>
+      </div>
 
-      <!-- Menu (1 página só) -->
-     <a href="#" onclick="mostrarDashboard(event)">Dashboard</a>
-<a href="#" onclick="mostrarClientes(event)">Clientes</a>
-<a href="#" onclick="mostrarCadastro(event)">Cadastrar Cliente</a>
-<a href="#" onclick="logout(event)">Sair</a>
+      <!-- MENU (SPA: não troca de página) -->
+      <nav class="menu">
+        <a href="#" onclick="navDashboard(event)">Dashboard</a>
+        <a href="#" onclick="navClientes(event)">Clientes</a>
+        <a href="#" onclick="navCadastrarCliente(event)">Cadastrar Cliente</a>
+        <a href="#" onclick="navChamados(event)">Chamados</a>
+        <a href="#" onclick="logout(event)">Sair</a>
+      </nav>
 
       <div class="sidebar-footer">
-        <small>v0.1</small>
+        <small>v0.1 • Moraes Tech</small>
       </div>
     </aside>
 
@@ -29,7 +35,7 @@
       <header class="topbar">
         <div class="topbar-left">
           <h1 id="page-title">Dashboard</h1>
-          <p id="page-subtitle">Visão geral do sistema</p>
+          <p id="page-subtitle" class="muted">Visão geral do sistema</p>
         </div>
 
         <div class="topbar-right">
@@ -37,22 +43,15 @@
         </div>
       </header>
 
-      <!-- Aqui o conteúdo vai trocar via JS -->
+      <!-- Conteúdo dinâmico (renderizado via app.js) -->
       <section class="content" id="conteudo"></section>
     </main>
   </div>
 
-  <!-- Ajuste o caminho se seu JS estiver em outro local -->
+  <!-- JS: carregue APENAS 1 arquivo (o seu app.js final) -->
   <script src="./assets/js/app.js"></script>
-  <script src="js/app.js"></script>
 </body>
 </html>
-
-<a href="#" onclick="mostrarChamados(event)">Chamados</a>
-
-<a href="#" onclick="mostrarNovoChamado(event)">Novo Chamado</a>
-
-<script src="Script.js"></script>
 
 
  

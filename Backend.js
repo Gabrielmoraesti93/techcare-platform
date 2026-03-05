@@ -6,6 +6,7 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const clienteRoutes = require("./routes/clienteRoutes");
 const chamadoRoutes = require("./routes/chamadoRoutes");
 const authRoutes = require("./routes/authRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const { authMiddleware } = require("./middlewares/authMiddleware");
 const { errorHandler } = require("./middlewares/errorMiddleware");
@@ -45,6 +46,7 @@ app.use("/auth", authRoutes);
 // ROTAS PROTEGIDAS
 app.use("/clientes", authMiddleware, clienteRoutes);
 app.use("/chamados", authMiddleware, chamadoRoutes);
+app.use("/dashboard", authMiddleware, dashboardRoutes);
 
 // ERROR
 app.use(errorHandler);

@@ -78,3 +78,10 @@ router.post("/login", (req, res) => {
 });
 
 module.exports = router;
+
+const { authMiddleware } = require("../middlewares/authMiddleware");
+
+// GET /auth/me
+router.get("/me", authMiddleware, (req, res) => {
+  res.json({ ok: true, user: req.user });
+});
