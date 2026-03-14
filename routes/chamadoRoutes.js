@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database");
 
-// GET /chamados -> lista chamados da empresa logada
+// GET /chamados
 router.get("/", (req, res) => {
   const empresa_id = req.user?.empresa_id;
 
@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
   );
 });
 
-// GET /chamados/:id -> pega 1 chamado da empresa
+// GET /chamados/:id
 router.get("/:id", (req, res) => {
   const empresa_id = req.user?.empresa_id;
   const id = Number(req.params.id);
@@ -39,7 +39,7 @@ router.get("/:id", (req, res) => {
   );
 });
 
-// POST /chamados -> cria chamado na empresa
+// POST /chamados
 router.post("/", (req, res) => {
   const empresa_id = req.user?.empresa_id;
   const { cliente, problema } = req.body || {};
@@ -59,7 +59,7 @@ router.post("/", (req, res) => {
   );
 });
 
-// PUT /chamados/:id -> atualiza (cliente/problema/status) somente da empresa
+// PUT /chamados/:id
 router.put("/:id", (req, res) => {
   const empresa_id = req.user?.empresa_id;
   const id = Number(req.params.id);
@@ -68,19 +68,28 @@ router.put("/:id", (req, res) => {
   if (!empresa_id) return res.status(401).json({ error: "Empresa não identificada no token." });
   if (!id) return res.status(400).json({ error: "ID inválido." });
 
-  // status opcional, mas se vier, valida
   const allowedStatus = ["aberto", "em_andamento", "finalizado"];
   if (status && !allowedStatus.includes(status)) {
-    return res.status(400).json({ error: `Status inválido. Use: ${allowedStatus.join(", ")}` });
+    return res.status(400).json({ error: "Status inválido." });
   }
 
-  // Monta update dinâmico (atualiza só o que veio)
   const fields = [];
   const values = [];
 
-  if (cliente) { fields.push("cliente = ?"); values.push(cliente); }
-  if (problema) { fields.push("problema = ?"); values.push(problema); }
-  if (status) { fields.push("status = ?"); values.push(status); }
+  if (cliente) {
+    fields.push("cliente = ?");
+    values.push(cliente);
+  }
+
+  if (problema) {
+    fields.push("problema = ?");
+    values.push(problema);
+  }
+
+  if (status) {
+    fields.push("status = ?");
+    values.push(status);
+  }
 
   if (fields.length === 0) {
     return res.status(400).json({ error: "Envie ao menos um campo para atualizar." });
@@ -99,7 +108,7 @@ router.put("/:id", (req, res) => {
   );
 });
 
-// DELETE /chamados/:id -> remove chamado somente da empresa
+// DELETE /chamados/:id
 router.delete("/:id", (req, res) => {
   const empresa_id = req.user?.empresa_id;
   const id = Number(req.params.id);

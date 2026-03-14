@@ -1,9 +1,33 @@
 // ./assets/js/app.js
 
-// 1) Ajuste sua API aqui:
 const API_URL = "https://moraes-tech.onrender.com";
 
-// Helpers
+// =============================
+// AUTH / TOKEN
+// =============================
+function getToken() {
+  return localStorage.getItem("token");
+}
+
+function authHeaders(extra = {}) {
+  const token = getToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...extra,
+  };
+}
+
+function logout(event) {
+  if (event) event.preventDefault();
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+
+// =============================
+// HELPERS
+// =============================
 function setHeader(title, subtitle) {
   const t = document.getElementById("page-title");
   const s = document.getElementById("page-subtitle");
@@ -29,6 +53,34 @@ function renderErro(msg, err) {
 }
 
 // =============================
+// NAVEGAÇÃO
+// =============================
+function navDashboard(event) {
+  if (event) event.preventDefault();
+  mostrarDashboard();
+}
+
+function navClientes(event) {
+  if (event) event.preventDefault();
+  mostrarClientes();
+}
+
+function navCadastrarCliente(event) {
+  if (event) event.preventDefault();
+  mostrarCadastroCliente();
+}
+
+function navChamados(event) {
+  if (event) event.preventDefault();
+  mostrarChamados();
+}
+
+function navKanban(event) {
+  if (event) event.preventDefault();
+  mostrarKanbanChamados();
+}
+
+// =============================
 // DASHBOARD
 // =============================
 function mostrarDashboard(event) {
@@ -44,22 +96,34 @@ function mostrarDashboard(event) {
       <div style="padding:16px;border:1px solid rgba(255,255,255,.15);border-radius:12px;">
         <h3>Clientes</h3>
         <p style="opacity:.8">Gerencie seus clientes</p>
-        <button onclick="mostrarClientes()">Ver clientes</button>
+        <button onclick="mostrarClientes()" style="padding:10px 14px;">Ver clientes</button>
       </div>
 
       <div style="padding:16px;border:1px solid rgba(255,255,255,.15);border-radius:12px;">
         <h3>Novo Cliente</h3>
         <p style="opacity:.8">Cadastre rapidamente</p>
-        <button onclick="mostrarCadastro()">Cadastrar</button>
+        <button onclick="mostrarCadastroCliente()" style="padding:10px 14px;">Cadastrar</button>
+      </div>
+
+      <div style="padding:16px;border:1px solid rgba(255,255,255,.15);border-radius:12px;">
+        <h3>Chamados</h3>
+        <p style="opacity:.8">Acompanhe os atendimentos</p>
+        <button onclick="mostrarChamados()" style="padding:10px 14px;">Ver chamados</button>
+      </div>
+
+      <div style="padding:16px;border:1px solid rgba(255,255,255,.15);border-radius:12px;">
+        <h3>Kanban</h3>
+        <p style="opacity:.8">Organize os chamados por status</p>
+        <button onclick="mostrarKanbanChamados()" style="padding:10px 14px;">Abrir kanban</button>
       </div>
     </div>
   `);
 }
 
 // =============================
-// CADASTRO
+// CLIENTES
 // =============================
-function mostrarCadastro(event) {
+function mostrarCadastroCliente(event) {
   if (event) event.preventDefault();
 
   setHeader("Cadastrar Cliente", "Cadastro rápido");
@@ -80,9 +144,6 @@ function mostrarCadastro(event) {
   `);
 }
 
-// =============================
-// SALVAR CLIENTE (POST)
-// =============================
 async function salvarCliente() {
   try {
     const nome = document.getElementById("nome")?.value?.trim();
@@ -98,7 +159,7 @@ async function salvarCliente() {
 
     const res = await fetch(`${API_URL}/clientes`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ nome, telefone })
     });
 
@@ -107,20 +168,15 @@ async function salvarCliente() {
       throw new Error(`API respondeu ${res.status}: ${text}`);
     }
 
-    // Se a API retornar JSON, ok:
     await res.json().catch(() => null);
 
     if (msg) msg.textContent = "✅ Cliente salvo!";
-    // Após salvar, mostra lista
     mostrarClientes();
   } catch (err) {
-    renderErro("Não foi possível salvar o cliente. Verifique se a API está online e com CORS ok.", err);
+    renderErro("Não foi possível salvar o cliente.", err);
   }
 }
 
-// =============================
-// LISTAR CLIENTES (GET)
-// =============================
 async function mostrarClientes(event) {
   if (event) event.preventDefault();
 
@@ -129,7 +185,9 @@ async function mostrarClientes(event) {
   try {
     setConteudo(`<p>Carregando clientes...</p>`);
 
-    const res = await fetch(`${API_URL}/clientes`);
+    const res = await fetch(`${API_URL}/clientes`, {
+      headers: authHeaders()
+    });
 
     if (!res.ok) {
       const text = await res.text();
@@ -139,8 +197,13 @@ async function mostrarClientes(event) {
     const clientes = await res.json();
 
     let html = `
-      <h2>Lista de Clientes</h2>
-      <p style="opacity:.85">Total: <b>${Array.isArray(clientes) ? clientes.length : 0}</b></p>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <div>
+          <h2>Lista de Clientes</h2>
+          <p style="opacity:.85">Total: <b>${Array.isArray(clientes) ? clientes.length : 0}</b></p>
+        </div>
+        <button onclick="mostrarCadastroCliente()" style="padding:10px 14px;">Novo cliente</button>
+      </div>
       <ul id="lista-clientes" style="margin-top:10px;line-height:1.9;"></ul>
     `;
 
@@ -157,9 +220,211 @@ async function mostrarClientes(event) {
     ul.innerHTML = clientes
       .map(c => `<li>${c.nome ?? "-"} — ${c.telefone ?? "-"}</li>`)
       .join("");
-
   } catch (err) {
-    renderErro("Não foi possível carregar os clientes. Verifique se a API está online e se o endpoint /clientes responde.", err);
+    renderErro("Não foi possível carregar os clientes.", err);
+  }
+}
+
+// =============================
+// CHAMADOS
+// =============================
+function mostrarCadastroChamado(event) {
+  if (event) event.preventDefault();
+
+  setHeader("Novo Chamado", "Abra um novo atendimento");
+
+  setConteudo(`
+    <h2>Abrir Chamado</h2>
+
+    <div style="max-width:520px;margin-top:12px;">
+      <label>Cliente</label><br/>
+      <input id="chamado_cliente" placeholder="Nome do cliente" style="width:100%;padding:10px;margin:6px 0 12px 0;" />
+
+      <label>Problema</label><br/>
+      <textarea id="chamado_problema" placeholder="Descreva o problema" style="width:100%;padding:10px;margin:6px 0 12px 0;min-height:110px;"></textarea>
+
+      <button onclick="salvarChamado()" style="padding:10px 14px;">Salvar</button>
+      <span id="msgChamado" style="margin-left:10px;opacity:.85;"></span>
+    </div>
+  `);
+}
+
+async function salvarChamado() {
+  try {
+    const cliente = document.getElementById("chamado_cliente")?.value?.trim();
+    const problema = document.getElementById("chamado_problema")?.value?.trim();
+    const msg = document.getElementById("msgChamado");
+
+    if (!cliente || !problema) {
+      if (msg) msg.textContent = "Preencha cliente e problema.";
+      return;
+    }
+
+    if (msg) msg.textContent = "Salvando...";
+
+    const res = await fetch(`${API_URL}/chamados`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ cliente, problema })
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`API respondeu ${res.status}: ${text}`);
+    }
+
+    await res.json().catch(() => null);
+
+    if (msg) msg.textContent = "✅ Chamado criado!";
+    mostrarChamados();
+  } catch (err) {
+    renderErro("Não foi possível criar o chamado.", err);
+  }
+}
+
+async function mostrarChamados(event) {
+  if (event) event.preventDefault();
+
+  setHeader("Chamados", "Lista de chamados da empresa");
+
+  try {
+    setConteudo(`<p>Carregando chamados...</p>`);
+
+    const res = await fetch(`${API_URL}/chamados`, {
+      headers: authHeaders()
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`API respondeu ${res.status}: ${text}`);
+    }
+
+    const chamados = await res.json();
+
+    const html = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <div>
+          <h2>Lista de Chamados</h2>
+          <p style="opacity:.85">Total: <b>${Array.isArray(chamados) ? chamados.length : 0}</b></p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="mostrarCadastroChamado()" style="padding:10px 14px;">Novo chamado</button>
+          <button onclick="mostrarKanbanChamados()" style="padding:10px 14px;">Ver kanban</button>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;display:grid;gap:12px;">
+        ${
+          Array.isArray(chamados) && chamados.length
+            ? chamados.map(ch => `
+              <div style="padding:14px;border:1px solid rgba(255,255,255,.12);border-radius:12px;">
+                <h3 style="margin:0 0 6px 0;">${ch.cliente ?? "-"}</h3>
+                <p style="margin:0 0 8px 0;opacity:.9;">${ch.problema ?? "-"}</p>
+                <small style="opacity:.75;">Status: <b>${ch.status ?? "-"}</b></small>
+              </div>
+            `).join("")
+            : `<div style="padding:14px;border:1px solid rgba(255,255,255,.12);border-radius:12px;">Nenhum chamado cadastrado.</div>`
+        }
+      </div>
+    `;
+
+    setConteudo(html);
+  } catch (err) {
+    renderErro("Não foi possível carregar os chamados.", err);
+  }
+}
+
+// =============================
+// KANBAN
+// =============================
+async function mostrarKanbanChamados(event) {
+  if (event) event.preventDefault();
+
+  setHeader("Kanban de Chamados", "Organize os chamados por status");
+
+  try {
+    setConteudo(`<p>Carregando kanban...</p>`);
+
+    const res = await fetch(`${API_URL}/chamados`, {
+      headers: authHeaders()
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`API respondeu ${res.status}: ${text}`);
+    }
+
+    const chamados = await res.json();
+
+    const abertos = chamados.filter(ch => ch.status === "aberto");
+    const andamento = chamados.filter(ch => ch.status === "em_andamento");
+    const finalizados = chamados.filter(ch => ch.status === "finalizado");
+
+    const renderCards = (lista, proximoStatus) => {
+      if (!lista.length) {
+        return `<div class="kanban-empty">Nenhum chamado</div>`;
+      }
+
+      return lista.map(ch => `
+        <div class="kanban-card">
+          <h4>${ch.cliente}</h4>
+          <p>${ch.problema}</p>
+          <small>Status: ${ch.status}</small>
+          <div class="kanban-actions">
+            ${proximoStatus ? `<button onclick="mudarStatusChamado(${ch.id}, '${proximoStatus}')">Mover</button>` : ""}
+          </div>
+        </div>
+      `).join("");
+    };
+
+    setConteudo(`
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <div>
+          <h2>Kanban de Chamados</h2>
+          <p style="opacity:.85;">Acompanhe o fluxo dos atendimentos</p>
+        </div>
+        <button onclick="mostrarCadastroChamado()" style="padding:10px 14px;">Novo chamado</button>
+      </div>
+
+      <div class="kanban-board">
+        <div class="kanban-column">
+          <div class="kanban-header">Aberto</div>
+          ${renderCards(abertos, "em_andamento")}
+        </div>
+
+        <div class="kanban-column">
+          <div class="kanban-header">Em andamento</div>
+          ${renderCards(andamento, "finalizado")}
+        </div>
+
+        <div class="kanban-column">
+          <div class="kanban-header">Finalizado</div>
+          ${renderCards(finalizados, null)}
+        </div>
+      </div>
+    `);
+  } catch (err) {
+    renderErro("Não foi possível carregar o kanban.", err);
+  }
+}
+
+async function mudarStatusChamado(id, novoStatus) {
+  try {
+    const res = await fetch(`${API_URL}/chamados/${id}`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ status: novoStatus })
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`API respondeu ${res.status}: ${text}`);
+    }
+
+    await res.json().catch(() => null);
+    mostrarKanbanChamados();
+  } catch (err) {
+    renderErro("Não foi possível atualizar o status do chamado.", err);
   }
 }
 
@@ -167,5 +432,19 @@ async function mostrarClientes(event) {
 // AUTO START
 // =============================
 window.addEventListener("load", () => {
+  const token = getToken();
+
+  if (!token) {
+    setHeader("Login necessário", "Acesse sua conta para continuar");
+    setConteudo(`
+      <div style="padding:16px;border:1px solid rgba(255,255,255,.15);border-radius:12px;">
+        <h2>Você não está logado</h2>
+        <p>Faça login para acessar o painel.</p>
+        <a href="login.html" style="display:inline-block;margin-top:10px;">Ir para login</a>
+      </div>
+    `);
+    return;
+  }
+
   mostrarDashboard();
 });
